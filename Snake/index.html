@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<head>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.7.2/p5.js"></script>
+  <title>🐍 Snake</title>
+</head>
+<body>
+  <script>
+    const game = {
+      height: 550,
+      width: 550,
+      background: [242, 225, 172],
+      grid: {
+        size: 22,
+        color: [231, 199, 100],
+      },
+      score: 0,
+    };
+
+    const snake = {
+      oldPosistion: {
+        x: 0,
+        y: 0,
+      },
+      position: {
+        x: 0,
+        y: 0,
+      },
+      tail: [],
+      direction: { x: 1, y: 0 },
+      color: [99, 166, 159],
+      draw: function () {
+        //Tête du serpent
+        fill(this.color);
+        rect(this.position.x, this.position.y, game.grid.size, game.grid.size);
+
+        //Queue du serpent
+        for (let i = 0; i < this.tail.length; i++) {
+          const transparency = map(i, 0, this.tail.length - 1, 255, 100); //Effet de transparence
+          fill(this.color[0], this.color[1], this.color[2], transparency);
+          rect(this.tail[i].x, this.tail[i].y, game.grid.size, game.grid.size);
+        }
+      },
+      update: function () {
+        this.updateTail();
+        this.move();
+        this.draw();
+      },
+      move: function () {
+        this.oldPosistion = { x: this.position.x, y: this.position.y };
+
+        const newPosX = constrain(
+          this.position.x + this.direction.x * game.grid.size,
+          0,
+          game.width - game.grid.size
+        );
+        const newPosY = constrain(
+          this.position.y + this.direction.y * game.grid.size,
+          0,
+          game.height - game.grid.size
+        );
+        this.position.x = newPosX;
+        this.position.y = newPosY;
+      },
+      startingPosition: function () {
+        const rowCount = game.height / game.grid.size;
+        const columnCount = game.width / game.grid.size;
+
+        this.position.x = Math.floor(columnCount / 2 - 1) * game.grid.size;
+        this.position.y = Math.floor(rowCount / 2) * game.grid.size;
+      },
+      onTopOfFood: function (food) {
+        //Vérifie la tête du serpent par rapport à chaque fruit dans la liste
+        for (let i = 0; i < food.length; i++) {
+          if (
+            this.position.x == food[i].position.x * game.grid.size &&
+            this.position.y == food[i].position.y * game.grid.size
+          ) {
+            //Collision détectée, renvoie l'index du fruit
+            return i;
+          }
+        }
+        //Aucune collision détectée, renvoie -1
+        return -1;
+      },
+      grow: function () {
+        const newTail = { x: 0, y: 0 };
+        newTail.x = this.position.x - this.direction.x * game.grid.size;
+        newTail.y = this.position.y - this.direction.y * game.grid.size;
+        this.tail.push(newTail);
+      },
+      updateTail: function () {
+        if (this.tail.length > 0) {
+          const newTail = { x: this.position.x, y: this.position.y };
+          this.tail.unshift(newTail);
+          this.tail.pop();
+        }
+      },
+      checkIfEnd: function () {
+        return this.checkIfOutOfBound() || this.checkIfOnTopOfTail();
+      },
+      checkIfOutOfBound: function () {
+        //Pour vérifier si la tête du serpent est en dehors de la zone de jeu
+        if (
+          this.position.x == 0 ||
+          this.position.x >= game.width - game.grid.size ||
+          this.position.y == 0 ||
+          this.position.y >= game.height - game.grid.size
+        ) {
+          return true; //Si tête du serpent en dehors de la zone de jeu
+        } else {
+          return false; //Si tête du serpent toujours dans la zone de jeu
+        }
+      },
+      checkIfOnTopOfTail: function (x, y) {
+        //Pour vérifier si la tête du serpent est au même emplacement que la queue
+        for (let i = 0; i < this.tail.length; i++) {
+          if (
+            this.position.x == this.tail[i].x &&
+            this.position.y == this.tail[i].y
+          ) {
+            return true; //Si tête du serpent est au même endroit que la queue
+          }
+        }
+        return false; //Si tête du serpent n'est pas sur la queue
+      },
+    };
+
+    const food = {
+      position: { x: 0, y: 0 },
+      color: [242, 89, 75],
+      startingPosition: function () {
+        let newPosX;
+        let newPosY;
+        let isOnTopOfSnake;
+        let isOnTopOfHead;
+        let isOnTopOffTail;
+        do {
+          newPosX = Math.floor(random(1, game.width / game.grid.size - 1));
+          newPosY = Math.floor(random(1, game.height / game.grid.size - 1));
+          isOnTopOfHead =
+            snake.position.x === newPosX * game.grid.size &&
+            snake.position.y === newPosY * game.grid.size;
+          isOnTopOffTail = snake.tail.some((tail) => {
+            return (
+              newPosX * game.grid.size === tail.x &&
+              newPosY * game.grid.size === tail.y
+            );
+            isOnTopOfSnake = isOnTopOfHead || isOnTopOffTail;
+          });
+        } while (isOnTopOfSnake);
+
+        this.position.x = newPosX;
+        this.position.y = newPosY;
+      },
+      draw: function () {
+        fill(this.color);
+        ellipse(
+          this.position.x * game.grid.size + game.grid.size / 2,
+          this.position.y * game.grid.size + game.grid.size / 2,
+          game.grid.size,
+          game.grid.size
+        );
+      },
+    };
+
+    const currFood = [];
+
+    drawGrid = () => {
+      stroke(game.grid.color);
+      for (let i = 0; i < game.width; i += game.grid.size) {
+        line(i, 0, i, game.height);
+      }
+      for (let i = 0; i < game.height; i += game.grid.size) {
+        line(0, i, game.width, i);
+      }
+
+      // cover outer lines with background color
+      fill(game.background);
+      noStroke();
+      rect(0, 0, game.grid.size, game.height);
+      rect(game.width - game.grid.size + 1, 0, game.width, game.height);
+      rect(0, 0, game.width, game.grid.size);
+      rect(0, game.height - game.grid.size + 1, game.width, game.height);
+
+      // add number on top of grid
+      fill(231, 199, 100);
+      textSize(20);
+      textAlign(CENTER, CENTER);
+      for (
+        let i = game.grid.size;
+        i < game.width - game.grid.size;
+        i += game.grid.size
+      ) {
+        text(
+          i / game.grid.size - 1,
+          i + game.grid.size / 2,
+          game.grid.size / 2
+        );
+      }
+
+      // add number to the left of grid
+      for (
+        let i = game.grid.size;
+        i < game.height - game.grid.size;
+        i += game.grid.size
+      ) {
+        text(
+          i / game.grid.size - 1,
+          game.grid.size / 2,
+          i + game.grid.size / 2
+        );
+      }
+    };
+
+    function setup() {
+      createCanvas(game.width + 200, game.height);
+      snake.startingPosition();
+      frameRate(5);
+      const newFood = Object.create(food);
+      newFood.startingPosition();
+      currFood.push(newFood);
+    }
+
+    function draw() {
+      background(game.background);
+      drawGrid();
+      snake.update();
+      const foodUnderIndex = snake.onTopOfFood(currFood);
+      if (foodUnderIndex !== -1) {
+        currFood.splice(foodUnderIndex, 1);
+        snake.grow();
+        game.score++;
+
+        const newFood = Object.create(food);
+        newFood.startingPosition();
+        currFood.push(newFood);
+      }
+      currFood.forEach((food) => {
+        food.draw();
+      });
+
+      //Score
+      fill(38, 166, 154);
+      textSize(20);
+      textAlign(CENTER, CENTER);
+      text(`Score: ${game.score}`, game.width + 50, 25);
+
+      if (snake.checkIfEnd()) {
+        noLoop();
+        alert("Game OVER! Try again? (◡‿◡✿)\nScore: " + game.score);
+        window.location.reload();
+      }
+    }
+
+    function keyPressed() {
+      switch (keyCode) {
+        case LEFT_ARROW:
+          if (!isGoingBackward(snake, {x:-1, y:0})) {
+            //Empêche serpent d'aller à droite s'il se déplace à gauche
+            snake.direction.x = -1;
+            snake.direction.y = 0;
+          }
+          break;
+
+        case RIGHT_ARROW:
+          if (!isGoingBackward(snake, {x:1, y:0})) {
+            //Empêche serpent d'aller à gauche s'il se déplace à droite
+            snake.direction.x = 1;
+            snake.direction.y = 0;
+          }
+          break;
+
+        case UP_ARROW:
+          if (!isGoingBackward(snake, {x:0, y:-1})) {
+            //Empêche serpent d'aller vers le bas s'il se déplace vers le haut
+            snake.direction.x = 0;
+            snake.direction.y = -1;
+          }
+          break;
+
+        case DOWN_ARROW:
+          if (!isGoingBackward(snake, {x:0, y:1})) {
+            //Empêche serpent d'aller vers le haut s'il se déplace vers le bas
+            snake.direction.x = 0;
+            snake.direction.y = 1;
+          }
+          break;
+      }
+    }
+
+    function isGoingBackward(snake, direction){
+      const newXAfterMovement = snake.position.x + direction.x * game.grid.size;
+      const newYAfterMovement = snake.position.y + direction.y * game.grid.size;
+      console.log("old position", snake.oldPosistion);
+      console.log({x:newXAfterMovement, y:newYAfterMovement});
+      const backward = newXAfterMovement == snake.oldPosistion.x && newYAfterMovement == snake.oldPosistion.y;
+
+      return backward;
+    }
+
+
+  </script>
+</body>

@@ -1,0 +1,125 @@
+<head>
+    <meta charset="UTF-8" />
+    <title>Tic Tac Toe</title>
+    <link rel="stylesheet" href="tictactoe-style.css" />
+  </head>
+  <body>
+    <input type="text" id="player1-name" placeholder="Nom du joueur 1">
+    <input type="text" id="player2-name" placeholder="Nom du joueur 2">
+    <h2 id="playername">Tour de : </h2>
+
+    <table class="morpion-table">
+      <tbody>
+        <tr>
+          <td id="00" onclick="clique(event)"></td>
+          <td id="01" onclick="clique(event)"></td>
+          <td id="02" onclick="clique(event)"></td>
+        </tr>
+        <tr>
+          <td id="10" onclick="clique(event)"></td>
+          <td id="11" onclick="clique(event)"></td>
+          <td id="12" onclick="clique(event)"></td>
+        </tr>
+        <tr>
+          <td id="20" onclick="clique(event)"></td>
+          <td id="21" onclick="clique(event)"></td>
+          <td id="22" onclick="clique(event)"></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div id="leaderboard"></div>
+  </body>
+<script>
+
+let game = [
+  [undefined, undefined, undefined],
+  [undefined, undefined, undefined],
+  [undefined, undefined, undefined]
+];
+
+let currentPlayer = "player1";
+
+let turns = {
+     player1: "X",
+   player2: "O"
+}
+
+let player1Name = document.getElementById("player1-name").value || "Joueur 1";
+let player2Name = document.getElementById("player2-name").value || "Joueur 2";
+
+function clique(event) {
+    let row = parseInt(event.target.id[0]);
+    let col = parseInt(event.target.id[1]);
+
+    if (game[row][col] == undefined) {
+        event.target.innerHTML = turns[currentPlayer];
+        game[row][col] = turns[currentPlayer];
+        checkWin();
+        togglePlayer();
+    }
+}
+
+function checkRows() {
+    for (let i = 0; i < game.length; i++) {
+        //game[i] = lignes du jeu
+        if (game[i][0] !== undefined && game[i][0] == game[i][1] && game[i][1] == game[i][2]) {
+            return true;
+        }
+    }
+    return false;
+}
+
+function checkColumns() {
+    for (let j = 0; j < 3; j++) {
+        if (game[0][j] !== undefined && game[0][j] == game[1][j] && game[1][j] == game[2][j]) {
+            return true;
+        }
+    }
+    return false;
+}
+
+function checkDiagonals() {
+    //La diagonale du haut-gauche au bas-droit
+    if (game[0][0] !== undefined && game[0][0] == game[1][1] && game[1][1] == game[2][2]) {
+        return true;
+    }
+    //La diagonale du haut-droit au bas-gauche
+    if (game[0][2] !== undefined && game[0][2] == game[1][1] && game[1][1] == game[2][0]) {
+        return true;
+    }
+    return false;
+}
+
+function checkWin() {
+    if (checkRows() || checkColumns() || checkDiagonals()) {
+        alert((currentPlayer == "player1" ? player1Name : player2Name) + " a gagné !");
+
+        // Pour sauvegarder l'historique dans le "local storage"
+        let history = JSON.parse(localStorage.getItem('gameHistory')) || [];
+        history.push(currentPlayer == "player1" ? player1Name : player2Name);
+        localStorage.setItem('gameHistory', JSON.stringify(history));
+
+        // Pour afficher l'historique sous forme de tableau
+        displayLeaderboard(history);
+        window.location.reload(true);
+
+        return; //Pour pas passer au joueur suivent quand un joueur gagne. Ici, le jeu s'arrête.
+    }
+}
+
+function togglePlayer() {
+    currentPlayer = (currentPlayer === "player1") ? "player2" : "player1";
+    document.getElementById("playername").textContent = "Tour de : " + (currentPlayer == "player1" ? player1Name : player2Name);
+}
+
+function displayLeaderboard(history) {
+  let leaderboard = document.getElementById('leaderboard');
+
+  for (let i = 0; i < history.length; i++) {
+    leaderboard.innerHTML += 'Partie ' + (i + 1) + '&nbsp:&nbsp' + history[i] + '</br>';
+  }
+}
+displayLeaderboard(JSON.parse(localStorage.getItem("gameHistory")) || []);
+
+</script>

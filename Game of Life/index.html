@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<head>
+  <script src="https://cdn.jsdelivr.net/npm/p5@1.8.0/lib/p5.js"></script>
+  <script src="game-of-life.js"></script>
+  <title>TP8 - Game of Life</title>
+</head>
+<body>
+  <button onclick="resetGame()">Réinitialiser</button>
+  <button onclick="setPattern()">Pattern prédéfini</button>
+  <button onclick="autoPlay()">Automatique ON/OFF</button>
+  <script>
+
+    let auto = false;
+
+    function setup() {
+      createCanvas(grid.height, grid.width);
+      background(grid.color.dead);
+      grid.init();
+      frameRate(5);
+    }
+
+    function draw() {
+      background(grid.color.dead);
+      grid.draw();
+
+      if (auto) {
+        grid.update();
+      }
+    }
+
+    function mouseClicked() {
+      grid.toggleCell(mouseX, mouseY);
+    }
+
+    function keyPressed() {
+      if (keyCode === ENTER) {
+        grid.update();
+      }
+      return false; //reset navigator defaults
+    }
+
+    function resetGame() {
+      grid.init();
+      auto = false;
+    }
+
+    function setPattern() {
+      grid.init();
+
+      const centerRow = Math.floor(grid.rows/2);
+      const centerCol = Math.floor(grid.columns/2);
+
+      grid.setCell(centerRow - 1, centerCol - 1, true);
+      grid.setCell(centerRow - 1, centerCol, true);
+      grid.setCell(centerRow - 1, centerCol + 1, true);
+      grid.setCell(centerRow + 1, centerCol - 1, true);
+      grid.setCell(centerRow + 1, centerCol, true);
+      grid.setCell(centerRow + 1, centerCol + 1, true);
+      grid.setCell(centerRow, centerCol - 2, true);
+      grid.setCell(centerRow, centerCol + 2, true);
+    }
+
+    function autoPlay() {
+      auto = !auto;
+    }
+
+  </script>
+</body>

@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>🐤 Ailes battantes</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.js"></script>
+  <link rel="stylesheet" type="text/css" href="flappy-bird.css">
+  <script src="flappy-bird.js"></script>
+</head>
+
+<body>
+  <div id="game-container">
+    <button id="musicbutton" onclick="toggleMusic()">🔈</button>
+  </div>
+
+  <div id="scores-container">
+    <div id="htmlscore"></div>
+    <div id="htmlleaderboard"></div>
+  </div>
+</body>
+<script>
+  function setup() {
+    createCanvas(game.width, game.height);
+    background(game.backgroundColor);
+    gaps.add();
+
+    music = new Audio("the-way-home-126175.mp3");
+    isMuted = true;
+
+    const gameContainer = document.getElementById('game-container');
+    gameContainer.appendChild(canvas);
+  }
+
+  function draw() {
+    background(game.backgroundColor);
+
+    updateGame();
+
+    gaps.draw();
+    bird.draw();
+    htmlscore.innerText = `Score : ${score}`;
+    htmlleaderboard.innerText = `Leaderboard :\n ${leaderboard}`;
+    checkGameOver();
+  }
+
+  function keyPressed() {
+    if (key === " ") {
+      bird.flap();
+    }
+    return false;
+  }
+
+  function updateGame() {
+    bird.update();
+    gaps.update();
+  }
+
+  function checkGameOver() {
+    if (bird.y > game.height || gaps.collision()) {
+      window.open('https://www.dailymotion.com/video/x8b57sh', '_blank');
+      noLoop();
+      fill(255, 255, 255, 150);
+      rect(0, 300, game.width, 100);
+      fill("#ED1648");
+      textSize(32);
+      text("🍗Game over🍗", game.width / 2 - 125, game.height / 2);
+      textSize(24);
+      text(`Score : ${score}`, game.width / 2 - 45, game.height / 1.85)
+      updateLeaderboard();
+    }
+  }
+
+  function toggleMusic() {
+    if (isMuted == true) {
+      isMuted = false;
+      document.querySelector('button').innerText = '🔊';
+      music.play();
+    } else {
+      isMuted = true;
+      document.querySelector('button').innerText = '🔈';
+      music.pause();
+    }
+  }
+
+</script>
+
+</html>

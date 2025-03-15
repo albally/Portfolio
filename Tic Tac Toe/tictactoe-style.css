@@ -1,0 +1,25 @@
+.morpion-table {
+  /* border-collapse: collapse; */
+  border: 2px solid rgb(255, 0, 100);
+  margin: auto;
+  width: 50%;
+  height: 50%;
+  min-height: 30em;
+  min-width: 30em;
+  font-family: Arial, Helvetica, sans-serif;
+  color: rgb(255, 0, 100);
+}
+
+.morpion-table td {
+  border: 1px solid rgb(255, 0, 100);
+  width: 33%;
+  height: 33%;
+  text-align: center;
+  vertical-align: middle;
+  font-size: 50px;
+  cursor: pointer;
+}
+
+.morpion-table td:hover {
+  background-color: #ffd0e3;
+}

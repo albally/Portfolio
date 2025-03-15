@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shifumi</title>
+</head>
+<body>
+<label for="shifumi-select">Pierre, feuille, ou ciseaux ?</label>
+
+<select name="shifumi" id="shifumi-select">
+    <option value="">--Choisir--</option>
+    <option value="pierre">Pierre</option>
+    <option value="feuille">Feuille</option>
+    <option value="ciseaux">Ciseaux</option>
+</select>
+<button id="ok_button" onclick="shifumi()">Ok</button>
+
+<table border="1px" style="margin-top: 20px;">
+    <thead>
+        <tr>
+            <th>Joueur</th>
+            <th>Ordinateur</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td id="userScore">0</td>
+            <td id="computerScore">0</td>
+        </tr>
+    </tbody>
+</table>
+
+<script>
+let userWins = 0;
+let userLosses = 0;
+
+function shifumi() {
+    let user_choice = document.getElementById("shifumi-select").value;
+
+    if (!user_choice) {
+        alert("Faites un choix, s'il vous plaît.");
+        return;
+    }
+
+    const choixOrdi = ['pierre', 'feuille', 'ciseaux'];
+    const computerChoice = choixOrdi[Math.floor(Math.random()*3)];
+
+    const results = {
+        "pierre": {
+        "pierre": "draw",
+        "feuille": "loss",
+        "ciseaux": "win"
+        },
+        "feuille": {
+        "pierre": "win",
+        "feuille": "draw",
+        "ciseaux": "loss"
+        },
+        "ciseaux": {
+        "pierre": "loss",
+        "feuille": "win",
+        "ciseaux": "draw"
+        }
+    };
+
+    const result = results[user_choice][computerChoice];
+    if (result == "win") {
+        userWins++;
+    } else if (result == "loss") {
+        userLosses++;
+    }
+
+    document.getElementById("userScore").textContent = userWins;
+    document.getElementById("computerScore").textContent = userLosses;
+
+    console.log(`Choix utilisateur: ${user_choice}, Choix ordi: ${computerChoice}`);
+    console.log(`${userWins} victoires, ${userLosses} défaites pour l'utilisateur.`);
+}
+
+function couples(lst){
+    let result_cs = new Set();
+
+    for(let i = 0; i < lst.length; i++){
+        for(let j = 0; j < lst.length; j++){
+            if(i !== j){
+                result_cs.add([lst[i], lst[j]]);
+            }
+        }
+    }
+
+    return Array.from(result_cs);
+}
+
+console.log(couples([1, 2, 3]));
+
+function diff(lst1, lst2){
+    let result_diff = new Set(lst1);
+
+    for(let elem of lst2){
+        if(result_diff.has(elem)){
+            result_diff.delete(elem);
+        }
+    }
+
+    return result_diff;
+}
+
+console.log(diff([1, 2, 3, 4, 5], [2, 4]));
+
+</script>
+</body>
+</html>

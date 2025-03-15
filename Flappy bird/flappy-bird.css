@@ -1,0 +1,46 @@
+body {
+    margin: 0;
+    display: flex;
+    height: 100vh; /* Make sure the body takes the full height of the viewport */
+  }
+  
+  #container {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    width: 80%;
+  }
+
+  #game-container {
+    position: relative;
+    margin-right: 20px;
+  }
+  
+  #score-container {
+    display: flex;
+    align-items: center;
+  }
+
+  #htmlscore{
+    margin-top: 10px;
+    font-size: 24px;
+    font-family: Arial, Helvetica, sans-serif;
+    color: #ED1648
+  }
+
+  #htmlleaderboard {
+    margin-top: 10px;
+    font-size: 24px;
+    font-family: Arial, Helvetica, sans-serif;
+    color: #ED1648
+  }
+
+  #musicbutton {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+  }
