@@ -89,7 +89,7 @@ const grid = {
     console.log("updating");
     const newGrid = this.newEmptyGrid(this.rows, this.columns);
 
-    //Méthode for i, j, k... du projet final de l'année précédente
+    //Méthode for i, j, k...
     for (let i = 0; i < this.rows; i++) {
       for (let j = 0; j < this.columns; j++) {
         const currentCell = this.getCell(i, j);
