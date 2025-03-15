@@ -1,9 +1,9 @@
 const grid = {
-  cellSize: 0, // size of each cell in pixel, calculted in init
-  height: 600, // size of the p5js canvas, can be changed
-  width: 600, // size of the p5js canvas, can be changed
-  columns: 30, // number of columns in the grid, can be changed
-  rows: 30, // number of rows grid, can be changed
+  cellSize: 0,
+  height: 600,
+  width: 600,
+  columns: 30,
+  rows: 30,
   color: {
     alive: 255,
     dead: 0,
